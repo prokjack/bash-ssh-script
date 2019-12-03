@@ -1,0 +1,16 @@
+{
+  "server1": {
+    "staging": "10.0.0.1",
+    "production": "10.0.0.2"
+  },
+  "server2": {
+    "INT": {
+          "staging": "10.0.0.3",
+          "production": "10.0.0.4"
+    },
+    "EXT": {
+          "staging": "10.0.0.5",
+          "production": "10.0.0.6"
+    }
+  }
+}
