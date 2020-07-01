@@ -1,7 +1,6 @@
 function getsettings() {
     local PARAMS="$#"
-    # TODO: pretty slow part with jq, need to improve
-    local JSON=`jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" <<< "$1"`
+    local JSON=`jq -r '[leaf_paths as $path | {"key": $path | join(":"), "value": getpath($path)}] | from_entries | to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$1"`
     local KEYS=''
 
     if [ $# -gt 1 ]; then
@@ -16,19 +15,13 @@ function getsettings() {
         fi
 
         IFS== read PAIR_KEY PAIR_VALUE <<< "$PAIR"
-
         if [ -z "$KEYS" ]; then
             KEY="$PAIR_KEY"
         else
             KEY="$KEYS:$PAIR_KEY"
         fi
-
-        if jq -e . >/dev/null 2>&1 <<< "$PAIR_VALUE"; then
-            getsettings "$PAIR_VALUE" "$KEY"
-        else
-        	SETTINGS_KEYS+=("$KEY");
-            SETTINGS["$KEY"]="$PAIR_VALUE"
-        fi
+        SETTINGS_KEYS+=("$KEY");
+        SETTINGS["$KEY"]="$PAIR_VALUE"
     done <<< "$JSON"
 }
 
